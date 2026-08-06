@@ -1,0 +1,4 @@
+interface:
+  display_name: "ComfyUI Custom Node Development"
+  short_description: "Develop and test ComfyUI custom nodes safely"
+  default_prompt: "Use $comfyui-custom-node-development to initialize and work in this ComfyUI custom-node repository."

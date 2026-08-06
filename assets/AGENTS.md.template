@@ -1,0 +1,15 @@
+# Agent Instructions
+
+Use `$comfyui-custom-node-development` for all development, testing, review, and packaging work in this repository.
+
+If the skill is unavailable, stop and tell the user that it must be installed before continuing.
+
+## Local ComfyUI Context
+
+<!-- comfyui-custom-node-context:start -->
+status: uninitialized
+<!-- comfyui-custom-node-context:end -->
+
+## Repository-Specific Instructions
+
+Add only rules that apply specifically to this custom-node repository below this heading.
