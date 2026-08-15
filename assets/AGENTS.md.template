@@ -13,3 +13,12 @@ status: uninitialized
 ## Repository-Specific Instructions
 
 Add only rules that apply specifically to this custom-node repository below this heading.
+
+### Test selection
+
+- Use `tests/run_tests.py` as the repository-owned test selector.
+- During iteration, run an exact test or one explicit `--group`.
+- Before handoff, run `tests/run_tests.py --changed` once.
+- Use `tests/run_tests.py --final` only as the deliberate broader gate.
+- Treat unmapped production source files as errors and update
+  `tests/test_groups.toml` instead of silently skipping coverage.

@@ -7,6 +7,32 @@
 - Follow the repository-owned test runner and documented working directory when present. Otherwise inspect the test configuration and use the configured ComfyUI environment without inventing universal pytest flags or temporary-directory policy.
 - Do not run model inference unless explicitly requested. Mock model loading and inference boundaries.
 
+## Repository-owned selector
+
+- Require each custom-node repository to document one repository-owned test
+  selector and its working directory in `AGENTS.md`.
+- Prefer `tests/run_tests.py` with `tests/test_groups.toml`. The selector must
+  invoke pytest through `sys.executable`, run from the configured ComfyUI root,
+  use `--import-mode=importlib`, use a unique repository-local `--basetemp`, add
+  the repository root to `PYTHONPATH`, and remove only its own temporary run.
+- Provide `--group`, `--changed`, `--base`, `--dry-run`, `--list-groups`, and
+  `--final` modes. Treat an unmapped production source as an error.
+- When the selector is absent after repository activation, create it before
+  testing by running `scripts/setup_test_runner.py <repository-root>` with the
+  configured ComfyUI Python. It generates `tests/test_groups.toml` from the
+  actual source and test inventory. Refine the safe broad mapping into semantic
+  groups through bounded source-to-test inspection.
+- Add the following repository rules when creating the selector:
+  - Use `tests/run_tests.py` for all Python test selection.
+  - During iteration, run an exact test or one explicit group.
+  - Before handoff, run `--changed` once for accumulated changes.
+  - Run `--final` only as a deliberate broader gate and do not repeat a
+    successful gate without relevant changes.
+  - Stage a new production source before relying on `--changed`, or select its
+    group explicitly.
+- If a test run emits repeated setup errors or unexpectedly large output, stop.
+  Diagnose the selector invocation itself before rerunning anything.
+
 ## Python tests
 
 - Start with the smallest repository-supported selection that exercises the changed external contract.

@@ -17,6 +17,12 @@ Use the repository-local `AGENTS.md` as the source of installation-specific path
 6. Do not write `AGENTS.md` until the user explicitly confirms every value and the repository-configuration scope. In Plan mode, present the confirmed repository configuration as a planned change. After the user requests implementation outside Plan mode, run `scripts/update_agents_context.py` with the confirmed paths. The script creates `AGENTS.md`, inserts a missing managed block, or updates the existing block while preserving unrelated content.
 7. For user-installed-only scope, do not create or modify any `AGENTS.md`; retain the confirmed paths only for the current task.
 8. After repository configuration, re-read `AGENTS.md` and use its configured paths for every command.
+9. After activation, inspect the repository test contract. If it lacks a
+   repository-owned selector, read [references/testing.md](references/testing.md)
+   and run `scripts/setup_test_runner.py <repository-root>` with the configured
+   ComfyUI Python. This provisions `tests/run_tests.py` and a safe broad
+   `tests/test_groups.toml` before testing. Refine its groups from bounded
+   source-to-test inspection. Do not guess a raw pytest command as a substitute.
 
 When a user declares the workspace a mock or names the skill as the evaluation target, evaluate this initialization flow without treating missing node-package files as defects. Do not modify the fixture unless the user explicitly asks to exercise the confirmed write path.
 
