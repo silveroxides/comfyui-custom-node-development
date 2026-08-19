@@ -15,7 +15,7 @@ It keeps installation-specific paths in each custom-node repository's `AGENTS.md
 Copy this query into Codex:
 
 ```text
-Install the skill from https://github.com/silveroxides/comfyui-custom-node-development-skill
+Install the skill from https://github.com/silveroxides/comfyui-custom-node-development
 ```
 
 ## Initialize a custom-node repository

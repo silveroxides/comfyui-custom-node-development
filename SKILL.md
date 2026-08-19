@@ -37,7 +37,15 @@ If this skill is referenced by `AGENTS.md` but unavailable, stop and tell the us
 - Read [references/testing.md](references/testing.md) before running Python or frontend tests.
 - Read [references/packaging.md](references/packaging.md) before changing dependencies, registry metadata, ignored files, versions, commits, or releases.
 - Preserve repository-specific instructions below the managed context block.
-- Treat user files, dirty changes, private utilities, plans, references, and untracked artifacts as out of scope unless explicitly requested.
+- Protect user files, dirty changes, plans, references, and untracked artifacts
+  from modification, staging, committing, or broad inspection unless the task
+  explicitly includes them. Untracked status alone does not make a repository
+  tool irrelevant or forbid read-only discovery. When a task involves fragile,
+  generated, serialized, or repeatedly maintained data, use bounded filename
+  discovery to identify repository-local scripts and utilities that directly
+  support that work. Read the relevant utility before editing, prefer the
+  established deterministic workflow over hand-editing its managed data, and
+  leave unrelated artifacts untouched.
 - Treat plans and tests as fallible artifacts. Cross-check them against the user contract and external protocol; never use their existence or successful execution as proof that the intended behavior is correct.
 
 ## Local AGENTS.md
