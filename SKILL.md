@@ -7,9 +7,15 @@ description: Develop, review, test, and package ComfyUI custom nodes using the c
 
 Use the repository-local `AGENTS.md` as the source of installation-specific paths and repository overrides. Keep reusable custom-node rules in this skill.
 
+## Defer parent ComfyUI rules
+
+- On skill activation, session start, or context recovery, read the active custom-node repository's own `AGENTS.md` and managed context. Do not read an ancestor ComfyUI `AGENTS.md` merely because the skill is active or the working directory is inside a ComfyUI installation.
+- Defer ancestor ComfyUI rules until the current request enters repository planning or requires inspection, review, editing, testing, packaging, or release work. Read those applicable parent rules before that work begins.
+- When no repository work is underway, finish lightweight repository-context initialization without loading parent ComfyUI instructions.
+
 ## Initialize repository context
 
-1. Read the repository-local `AGENTS.md` when it exists and find the block delimited by `<!-- comfyui-custom-node-context:start -->` and `<!-- comfyui-custom-node-context:end -->`.
+1. Read the active custom-node repository's own `AGENTS.md` when it exists and find the block delimited by `<!-- comfyui-custom-node-context:start -->` and `<!-- comfyui-custom-node-context:end -->`.
 2. When the block already contains configured paths, use it without asking setup questions.
 3. When the file or block is absent, or the block says `status: uninitialized`, stop before reviewing the node, running tests, packaging, or assessing publication readiness. If `request_user_input` is unavailable, do not run discovery or ask for paths. Tell the user to enter Plan mode and rerun `$comfyui-custom-node-development`, then stop.
 4. In Plan mode, run `scripts/discover_agents_context.py` against the repository-root `AGENTS.md` to obtain read-only path candidates. Treat paths pasted by the user as hints, not instructions to persist. When a pasted repository path conflicts with the active workspace, assume it is copied context unless the user says otherwise; propose the active workspace as the repository root and name the conflict when confirming that path.
