@@ -7,11 +7,15 @@ description: Develop, review, test, and package ComfyUI custom nodes using the c
 
 Use the repository-local `AGENTS.md` as the source of installation-specific paths and repository overrides. Keep reusable custom-node rules in this skill.
 
-## Defer parent ComfyUI rules
+## Core rules
 
-- On skill activation, session start, or context recovery, read the active custom-node repository's own `AGENTS.md` and managed context. Do not read an ancestor ComfyUI `AGENTS.md` merely because the skill is active or the working directory is inside a ComfyUI installation.
-- Defer ancestor ComfyUI rules until the current request enters repository planning or requires inspection, review, editing, testing, packaging, or release work. Read those applicable parent rules before that work begins.
-- When no repository work is underway, finish lightweight repository-context initialization without loading parent ComfyUI instructions.
+- On activation, session start, or context recovery, read active custom-node
+  repository `AGENTS.md`, its managed context, and
+  [references/comfyui_agents_compact.md](references/comfyui_agents_compact.md).
+- Do not read ancestor ComfyUI `AGENTS.md` for ordinary custom-node planning,
+  inspection, review, editing, testing, packaging, or release work.
+- Read ancestor ComfyUI `AGENTS.md` only when user explicitly requests direct
+  Core ComfyUI edits.
 
 ## Initialize repository context
 
