@@ -5,12 +5,12 @@ description: Develop, review, test, and package ComfyUI custom nodes using the c
 
 # ComfyUI Custom Node Development
 
-Use the repository-local `AGENTS.md` as the source of installation-specific paths and repository overrides. Keep reusable custom-node rules in this skill.
+Use `AGENTS-LOCAL.md` for machine-specific installation paths and overrides; keep portable contributor rules in `AGENTS.md`. Keep reusable custom-node rules in this skill.
 
 ## Core rules
 
 - On activation, session start, or context recovery, read active custom-node
-  repository `AGENTS.md`, its managed context, and
+  repository `AGENTS.md`, `AGENTS-LOCAL.md` when present, the applicable managed context, and
   [references/comfyui_agents_compact.md](references/comfyui_agents_compact.md).
 - Do not read ancestor ComfyUI `AGENTS.md` for ordinary custom-node planning,
   inspection, review, editing, testing, packaging, or release work.
@@ -19,26 +19,28 @@ Use the repository-local `AGENTS.md` as the source of installation-specific path
 
 ## Initialize repository context
 
-1. Read the active custom-node repository's own `AGENTS.md` when it exists and find the block delimited by `<!-- comfyui-custom-node-context:start -->` and `<!-- comfyui-custom-node-context:end -->`.
+1. Read the active repository's `AGENTS.md` and local `AGENTS-LOCAL.md` when present. Find the block delimited by `<!-- comfyui-custom-node-context:start -->` and `<!-- comfyui-custom-node-context:end -->`. An initialized local block takes precedence; accept an existing public block only for legacy compatibility.
 2. When the block already contains configured paths, use it without asking setup questions.
-3. When the file or block is absent, or the block says `status: uninitialized`, stop before reviewing the node, running tests, packaging, or assessing publication readiness. If `request_user_input` is unavailable, do not run discovery or ask for paths. Tell the user to enter Plan mode and rerun `$comfyui-custom-node-development`, then stop.
-4. In Plan mode, run `scripts/discover_agents_context.py` against the repository-root `AGENTS.md` to obtain read-only path candidates. Treat paths pasted by the user as hints, not instructions to persist. When a pasted repository path conflicts with the active workspace, assume it is copied context unless the user says otherwise; propose the active workspace as the repository root and name the conflict when confirming that path.
-5. In Plan mode, use `request_user_input` to confirm one value per question, in this order: target `AGENTS.md`, ComfyUI root, custom-nodes root, repository root, and virtual-environment root. Use the Python executable discovered with that environment; when the environment changes or it is unresolved, let `update_agents_context.py` resolve it from the confirmed virtual environment. Show the resolved executable in the planned configuration, and do not ask a separate question for it. Show only the current value's candidate and unresolved status. When an earlier path changes, recompute later dependent candidates where possible and do not offer stale values. After the paths, ask whether to configure the repository or keep the paths session-only.
-6. Do not write `AGENTS.md` until the user explicitly confirms every value and the repository-configuration scope. In Plan mode, present the confirmed repository configuration as a planned change. After the user requests implementation outside Plan mode, run `scripts/update_agents_context.py` with the confirmed paths. The script creates `AGENTS.md`, inserts a missing managed block, or updates the existing block while preserving unrelated content.
-7. For user-installed-only scope, do not create or modify any `AGENTS.md`; retain the confirmed paths only for the current task.
-8. After repository configuration, re-read `AGENTS.md` and use its configured paths for every command.
-9. After activation, inspect the repository test contract. If it lacks a
+3. When neither local nor legacy public context is initialized, stop before reviewing the node, running tests, packaging, or assessing publication readiness. If `request_user_input` is unavailable, do not run discovery or ask for paths. Tell the user to enter Plan mode and rerun `$comfyui-custom-node-development`, then stop.
+4. In Plan mode, run `scripts/discover_agents_context.py` against the repository-root `AGENTS-LOCAL.md` to obtain read-only path candidates. Treat paths pasted by the user as hints, not instructions to persist. When a pasted repository path conflicts with the active workspace, assume it is copied context unless the user says otherwise; propose the active workspace as the repository root and name the conflict when confirming that path.
+5. In Plan mode, use `request_user_input` to confirm one value per question, in this order: target `AGENTS-LOCAL.md`, ComfyUI root, custom-nodes root, repository root, and virtual-environment root. Use the Python executable discovered with that environment; when the environment changes or it is unresolved, let `update_agents_context.py` resolve it from the confirmed virtual environment. Show the resolved executable in the planned configuration, and do not ask a separate question for it. Show only the current value's candidate and unresolved status. When an earlier path changes, recompute later dependent candidates where possible and do not offer stale values. After the paths, ask whether to configure the repository or keep the paths session-only.
+6. Do not write `AGENTS-LOCAL.md` until the user explicitly confirms every value and the repository-configuration scope. In Plan mode, present the confirmed repository configuration as a planned change. After the user requests implementation outside Plan mode, run `scripts/update_agents_context.py` with the confirmed paths. The script creates `AGENTS-LOCAL.md`, inserts a missing managed block, or updates the existing block while preserving unrelated content.
+7. For user-installed-only scope, do not create or modify repository instruction files; retain the confirmed paths only for the current task.
+8. After repository configuration, re-read `AGENTS-LOCAL.md` and use its configured paths for every command.
+9. Before running tests, inspect the repository test contract. If it lacks a
    repository-owned selector, read [references/testing.md](references/testing.md)
-   and run `scripts/setup_test_runner.py <repository-root>` with the configured
+   and, when test-infrastructure setup is authorized, run `scripts/setup_test_runner.py <repository-root>` with the configured
    ComfyUI Python. This provisions `tests/run_tests.py` and a safe broad
    `tests/test_groups.toml` before testing. Refine its groups from bounded
    source-to-test inspection. Do not guess a raw pytest command as a substitute.
+   Do not provision test infrastructure during instruction inspection or other
+   read-only tasks; report a missing selector instead of changing that scope.
 
 When a user declares the workspace a mock or names the skill as the evaluation target, evaluate this initialization flow without treating missing node-package files as defects. Do not modify the fixture unless the user explicitly asks to exercise the confirmed write path.
 
 Never write installation-specific ComfyUI paths to the user-level `~/.codex/AGENTS.md`. Global guidance may identify this skill, but repository paths belong to repository context.
 
-If this skill is referenced by `AGENTS.md` but unavailable, stop and tell the user that `comfyui-custom-node-development` must be installed. Do not substitute an unverified environment.
+If this skill is required by applicable repository instructions but unavailable, stop and tell the user that `comfyui-custom-node-development` must be installed. Do not substitute an unverified environment.
 
 ## Work in the repository
 
@@ -60,4 +62,4 @@ If this skill is referenced by `AGENTS.md` but unavailable, stop and tell the us
 
 ## Local AGENTS.md
 
-Use `assets/AGENTS.md.template` for a new custom-node repository. Keep the managed block limited to paths. Put project-specific rules below it. Never copy installation paths between repositories or ComfyUI installations.
+Use `assets/AGENTS-LOCAL.md.template` for new machine context. Keep the managed block local and limited to paths; ensure `AGENTS-LOCAL.md` is ignored before handoff and never stage or commit it. Keep portable project guidance in `AGENTS.md`. Never copy installation paths between repositories or installations.

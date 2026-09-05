@@ -1,0 +1,10 @@
+# Local Agent Instructions
+
+Keep this file local and ignored; never stage or commit it.
+Read AGENTS.md when present for portable repository engineering rules.
+
+## Local ComfyUI Context
+
+<!-- comfyui-custom-node-context:start -->
+status: uninitialized
+<!-- comfyui-custom-node-context:end -->

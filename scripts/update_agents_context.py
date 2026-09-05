@@ -64,10 +64,11 @@ def validated_paths(args):
         raise ValueError("Custom-nodes root must be inside the configured ComfyUI root.")
     if not is_within(repo_root, custom_nodes_root):
         raise ValueError("Repository root must be inside the configured custom-nodes root.")
-    if agents_path != (repo_root / "AGENTS.md").resolve():
+    allowed_targets = {(repo_root / name).resolve() for name in ("AGENTS.md", "AGENTS-LOCAL.md")}
+    if agents_path not in allowed_targets:
         raise ValueError(
             f"AGENTS.md target does not match repository root: {agents_path}; "
-            f"expected {(repo_root / 'AGENTS.md').resolve()}."
+            "expected AGENTS-LOCAL.md (preferred) or legacy AGENTS.md in that repository."
         )
     if not is_within(python_executable, venv_root):
         raise ValueError("Python executable must be inside the configured virtual environment.")
@@ -90,7 +91,8 @@ def managed_block(paths, newline):
 
 def update_agents(args):
     paths, agents_path = validated_paths(args)
-    template_path = Path(__file__).resolve().parents[1] / "assets" / "AGENTS.md.template"
+    template_name = "AGENTS-LOCAL.md.template" if agents_path.name == "AGENTS-LOCAL.md" else "AGENTS.md.template"
+    template_path = Path(__file__).resolve().parents[1] / "assets" / template_name
     source_path = agents_path if agents_path.exists() else template_path
     with source_path.open("r", encoding="utf-8", newline="") as handle:
         source = handle.read()

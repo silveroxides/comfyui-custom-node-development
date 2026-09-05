@@ -49,6 +49,18 @@ class UpdateAgentsContextTests(unittest.TestCase):
         self.assertFalse(MODULE.update_agents(self.arguments()))
         self.assertFalse(MODULE.update_agents(self.arguments(check=True)))
 
+    def test_local_context_preserves_public_instructions_and_is_idempotent(self):
+        self.agents_path.write_text("# Portable contributor rules\n", encoding="utf-8")
+        args = self.arguments()
+        local_path = self.repo_root / "AGENTS-LOCAL.md"
+        args.agents = str(local_path)
+        self.assertTrue(MODULE.update_agents(args))
+        self.assertEqual(self.agents_path.read_text(encoding="utf-8"), "# Portable contributor rules\n")
+        self.assertIn(str(self.comfy_root), local_path.read_text(encoding="utf-8"))
+        self.assertFalse(MODULE.update_agents(args))
+        args.check = True
+        self.assertFalse(MODULE.update_agents(args))
+
     def test_discovers_posix_python_executable(self):
         self.python_executable.unlink()
         python_executable = self.venv_root / "bin" / "python"
