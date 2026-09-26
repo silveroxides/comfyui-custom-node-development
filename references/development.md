@@ -23,12 +23,14 @@
 - Do not invent hidden fallbacks, optionality, defaults, aliases, or compatibility behavior. Expose user-significant choices explicitly and preserve old behavior only when it does not contradict the requested contract.
 - Use `io.Autogrow` only after checking its generated socket IDs, visible numbering, batch behavior, execution mapping, and workflow compatibility against the node's documented indexing contract.
 - Keep warnings and errors short, actionable, and specific to invalid user state.
+- Tolerate user inputs: prefer completing execution over rejecting values that exceed advertised or recommended limits; do not fail workflows solely to prevent poor output. Adapt (resize, pad, clamp) only when unadjusted values crash downstream operations, without relaxing security or path validation.
 
 ## Models, tensors, and execution
 
 - Use ComfyUI model loading, patching, device, dtype, offload, and Dynamic VRAM management paths. Do not add competing model lifecycle management.
 - Preserve model-native tokenizer and conditioning protocols. Arguments such as `images`, model-specific reference items, keyframes, reference metadata, and modality tags are not interchangeable merely because they carry the same pixels.
 - Avoid unnecessary device transfers, CPU readbacks, dtype conversions, synchronization, persistent tensor caches, and blocking I/O in execution paths.
+- Preprocess repeating condition-dependent model work once in `BaseModel.extra_conds` (LTXAV/Anima pattern) and pass through normal conditioning instead of adding custom model or sampler caches.
 - Keep allocations on the intended device and dtype. Preserve native tensor layouts unless a documented interface requires conversion.
 - Do not patch model internals at runtime from node code. Use the model patcher or the established extension interface.
 - Do not run model inference unless the user explicitly requests it.

@@ -76,6 +76,14 @@
 - Use `torch.empty` for checkpoint-populated parameter/buffer placeholders and `nn.Parameter`; never fabricate checkpoint contents/fallback initialization. Omit useless non-state allocations.
 - Copy long-lived slices from large tensors. Prefer fused/compound ops such as `addcmul` when clear and contract-preserving.
 - Persistent caches must be minimal with ownership/invalidation. Optimize measurable allocations, transfers, peak memory, batching, or dispatch only.
+- Preprocess repeating condition-dependent model work once via model method in `BaseModel.extra_conds` (LTXAV/Anima pattern) and pass via normal conditioning; do not add model-owned or sampler-option caches.
+
+## User Input Tolerance
+
+- Complete workflows with supplied values; do not reject inputs solely because they exceed recommended, UI-advertised, or quality-oriented limits (e.g. do not reject/truncate reference images exceeding advertised maximum).
+- Do not add validation errors solely to prevent low-quality, degraded, or nonsensical output; bad result is preferred over failing executable workflow.
+- Adapt (resize, pad, clamp, normalize) inputs only when unchanged values cause downstream model/operation failure. Make smallest adjustment needed to run; do not add model validation failure to justify adapting.
+- Permissive policy does not override security boundaries (path containment) or model/checkpoint integrity checks.
 
 ## Nodes and User-Facing Behavior
 
