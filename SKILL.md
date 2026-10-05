@@ -1,6 +1,7 @@
 ---
 name: comfyui-custom-node-development
 description: Develop, review, test, and package ComfyUI custom nodes using the correct installation-specific environment. Use when working inside any ComfyUI custom-node repository, initializing its AGENTS.md context, changing Python or frontend node behavior, checking compatibility with the local ComfyUI checkout, running tests, or preparing registry releases.
+version: 0.2.0
 ---
 
 # ComfyUI Custom Node Development
