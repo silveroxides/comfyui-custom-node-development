@@ -31,6 +31,7 @@
 - Preserve model-native tokenizer and conditioning protocols. Arguments such as `images`, model-specific reference items, keyframes, reference metadata, and modality tags are not interchangeable merely because they carry the same pixels.
 - Avoid unnecessary device transfers, CPU readbacks, dtype conversions, synchronization, persistent tensor caches, and blocking I/O in execution paths.
 - Preprocess repeating condition-dependent model work once in `BaseModel.extra_conds` (LTXAV/Anima pattern) and pass through normal conditioning instead of adding custom model or sampler caches.
+- Model implementations use `AttentionTensorContainer`, per-module `self.comfy_attention = ComfyAttention()` (passed to attention as `preferred_attention`), and integrate block loops with `comfy.model_prefetch` and the memory compiler.
 - Keep allocations on the intended device and dtype. Preserve native tensor layouts unless a documented interface requires conversion.
 - Do not patch model internals at runtime from node code. Use the model patcher or the established extension interface.
 - Do not run model inference unless the user explicitly requests it.

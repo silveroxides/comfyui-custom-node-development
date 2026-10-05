@@ -61,6 +61,8 @@
 - Use existing optimized Comfy Kitchen/ComfyUI operation whenever it supports required math/layout without changing contract. Inspect single, paired, fused, layout-specific, and quantized variants first; benchmark valid alternatives.
 - Adapt inputs to documented optimized operation layout; preserve math, dtype, device, autograd, epsilon, scaling, and output shape. Keep local implementation only when no supported operation meets required contract.
 - Use ComfyUI casts/offload/cleanup for optimized parameters. Do not duplicate existing kernels or custom float32-upcasting inference ops.
+- Model implementations use `AttentionTensorContainer` and per-module `self.comfy_attention = ComfyAttention()`, passed to attention as `preferred_attention`.
+- Integrate model block loops with memory compiler and `comfy.model_prefetch` helpers, following existing model patterns.
 - All models use ComfyUI-selected optimized attention. Treat selected attention/backend callables as opaque; do not inspect identity, name, module, or implementation.
 - Model constructors with `operations` assume non-`None`. Forward/constructors carry only values actually needed.
 - Reuse existing model classes, blocks, ops, and helpers before adding model versions.
