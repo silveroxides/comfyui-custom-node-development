@@ -12,6 +12,28 @@ It keeps installation-specific paths in each custom-node repository's `AGENTS.md
 
 ## Install
 
+### Via Skills CLI (Universal)
+
+Install globally from GitHub into all supported agent environments (OpenCode, Codex, Cursor, etc.):
+
+```bash
+npx skills add silveroxides/comfyui-custom-node-development -g
+```
+
+Or using the full repository URL:
+
+```bash
+npx skills add https://github.com/silveroxides/comfyui-custom-node-development -g
+```
+
+To limit installation to specific agents:
+
+```bash
+npx skills add silveroxides/comfyui-custom-node-development -g --agent opencode codex
+```
+
+### Conversational Install (Codex)
+
 Copy this query into Codex:
 
 ```text
