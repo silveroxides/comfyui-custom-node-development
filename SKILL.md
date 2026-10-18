@@ -1,7 +1,7 @@
 ---
 name: comfyui-custom-node-development
 description: Develop, review, test, and package ComfyUI custom nodes using the correct installation-specific environment. Use when working inside any ComfyUI custom-node repository, initializing its AGENTS.md context, changing Python or frontend node behavior, checking compatibility with the local ComfyUI checkout, running tests, or preparing registry releases.
-version: 0.2.0
+version: 0.2.1
 ---
 
 # ComfyUI Custom Node Development
@@ -60,6 +60,13 @@ If this skill is required by applicable repository instructions but unavailable,
   established deterministic workflow over hand-editing its managed data, and
   leave unrelated artifacts untouched.
 - Treat plans and tests as fallible artifacts. Cross-check them against the user contract and external protocol; never use their existence or successful execution as proof that the intended behavior is correct.
+
+## Quick Reasoning Mode
+
+Initiate this mode ONLY when the user explicitly says either "Quick Reasoning Mode" or the short name "quickreasonmode". Do not activate it otherwise.
+
+When initiated:
+- From this moment onwards, you are on a strict allowance of 2 reasoning sentences and between each, you HAVE to write to user what you were thinking.
 
 ## Local AGENTS.md
 
