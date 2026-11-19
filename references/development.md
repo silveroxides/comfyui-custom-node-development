@@ -43,6 +43,18 @@
 - Keep interaction geometry local and test pure geometry or queue selection with Node when possible.
 - Avoid UI controls that duplicate configuration sockets or unnecessarily expand node dimensions.
 
+## List-handling contracts (`is_input_list` and `is_output_list`)
+
+- `is_input_list` (`INPUT_IS_LIST`) and `is_output_list` (`OUTPUT_IS_LIST`) are static class/schema properties; ComfyUI execution does not support toggling them dynamically at runtime.
+- Default (`is_input_list=False`): `execution._async_map_node_over_list` auto-maps over input lists, slicing inputs with repeat-last semantics (`seq[i if len(seq) > i else -1]`), executing the node once per element.
+- List input mode (`is_input_list=True`): ComfyUI passes all input sockets and widget values wrapped in lists to a single `execute()` invocation. Widget scalar inputs arrive as `[val]`.
+- List output mode (`is_output_list=True`): `execution.merge_result_data` expects `execute()` to return a list for that socket, extending results instead of nesting them. Returning `[single_result]` produces identical downstream propagation to a non-list output while enabling multi-element returns when needed.
+- Dual-mode nodes (supporting both per-item mapped processing and whole-list aggregation via an `as_list` toggle):
+  - Must define `is_input_list=True` on the schema.
+  - Must define `is_output_list=True` on outputs so per-item mode can return variable-dimension or variable-count outputs without shape-mismatch errors.
+  - When `as_list=True` (combine mode): aggregate across all elements in the input list and return `io.NodeOutput([combined_result])`.
+  - When `as_list=False` (per-item mode): replicate ComfyUI repeat-last slicing across all inputs and widget options, process each element independently, and return `io.NodeOutput([res_0, res_1, ...])`.
+
 ## Change discipline
 
 - Make the smallest change that satisfies the audited end-to-end contract. Do not localize a repeated or shared-contract defect merely to minimize the diff.
