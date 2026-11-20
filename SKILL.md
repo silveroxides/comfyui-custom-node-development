@@ -39,7 +39,7 @@ Use `AGENTS-LOCAL.md` for machine-specific installation paths and overrides; kee
 
 When a user declares the workspace a mock or names the skill as the evaluation target, evaluate this initialization flow without treating missing node-package files as defects. Do not modify the fixture unless the user explicitly asks to exercise the confirmed write path.
 
-Never write installation-specific ComfyUI paths to the user-level `~/.codex/AGENTS.md`. Global guidance may identify this skill, but repository paths belong to repository context.
+Never write installation-specific ComfyUI paths to global instruction files (`~/.config/opencode/AGENTS.md` or `~/.codex/AGENTS.md`). Global guidance may identify this skill, but repository paths belong to repository context.
 
 If this skill is required by applicable repository instructions but unavailable, stop and tell the user that `comfyui-custom-node-development` must be installed. Do not substitute an unverified environment.
 
