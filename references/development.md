@@ -45,15 +45,27 @@
 
 ## List-handling contracts (`is_input_list` and `is_output_list`)
 
-- `is_input_list` (`INPUT_IS_LIST`) and `is_output_list` (`OUTPUT_IS_LIST`) are static class/schema properties; ComfyUI execution does not support toggling them dynamically at runtime.
-- Default (`is_input_list=False`): `execution._async_map_node_over_list` auto-maps over input lists, slicing inputs with repeat-last semantics (`seq[i if len(seq) > i else -1]`), executing the node once per element.
-- List input mode (`is_input_list=True`): ComfyUI passes all input sockets and widget values wrapped in lists to a single `execute()` invocation. Widget scalar inputs arrive as `[val]`.
-- List output mode (`is_output_list=True`): `execution.merge_result_data` expects `execute()` to return a list for that socket, extending results instead of nesting them. Returning `[single_result]` produces identical downstream propagation to a non-list output while enabling multi-element returns when needed.
-- Dual-mode nodes (supporting both per-item mapped processing and whole-list aggregation via an `as_list` toggle):
-  - Must define `is_input_list=True` on the schema.
-  - Must define `is_output_list=True` on outputs so per-item mode can return variable-dimension or variable-count outputs without shape-mismatch errors.
-  - When `as_list=True` (combine mode): aggregate across all elements in the input list and return `io.NodeOutput([combined_result])`.
-  - When `as_list=False` (per-item mode): replicate ComfyUI repeat-last slicing across all inputs and widget options, process each element independently, and return `io.NodeOutput([res_0, res_1, ...])`.
+- `is_input_list` (`INPUT_IS_LIST`) and `is_output_list` (`OUTPUT_IS_LIST`) are static class/schema properties; ComfyUI cannot toggle them at runtime.
+- Default auto-mapping (`is_input_list=False`):
+  - Core's `_async_map_node_over_list` auto-maps across input links with repeat-last slicing (`seq[i if len(seq) > i else -1]`), running `execute()` once per element.
+  - **Container boundary**: Core auto-mapping applies only to graph links. Custom container dictionaries (`dict`) encapsulate data; Core treats them as opaque single objects and cannot auto-map over lists hidden inside them.
+- Manual list input mode (`is_input_list=True`):
+  - Core disables auto-mapping. All inputs and widgets arrive wrapped in Python lists (widgets/scalars arrive as `[val]`).
+  - In V3 schemas, autogrow sockets arrive as dictionaries whose leaf values are lists (`{"socket_1": [val, ...]}`).
+- Manual batch execution implementation rules:
+  - **Python list vs Tensor batch**: A Python `list` represents ComfyUI sequential execution turns across runs; a tensor batch dimension (`[B, ...]`) represents multi-item presentation within a single turn, unless explicitly documented otherwise.
+  - **Batch size resolution**: Compute `batch_count` as `max(len(v))` across direct input lists, autogrow dictionary values, and nested container dictionaries. If all inputs have length <= 1, execute a single turn.
+  - **Per-turn slicing**: Replicate Core's repeat-last slicing across all direct inputs, autogrow dictionaries, and container sub-dictionaries using `val[min(idx, len(val) - 1)]`. Unwrap widget scalars from single-element list wrappers.
+  - **Cache / precompute suppression**: Heavy media preprocessing or caching must be disabled (`None`) when any input has a list length > 1, ensuring each turn serializes only its own sliced payload instead of concatenating the entire list into turn 0.
+  - **Interrupt handling**: Call `comfy.model_management.throw_exception_if_processing_interrupted()` inside manual turn loops to honor UI cancel requests.
+  - **Stateful chaining**: When batching sequential requests with session or store continuity, chain state from the prior turn's result (`idx - 1`) and maintain 1:1 output list index alignment.
+- List output mode (`is_output_list=True`):
+  - Core's `merge_result_data` calls `value.extend(o[i])` for sockets with `is_output_list=True`.
+  - Every return for a list output socket **must** be an iterable/list (e.g. `[res_0, res_1, ...]`), even for a single result (`[single_res]`). Returning a raw scalar or string causes Core to iterate over its elements (e.g. splitting `"text"` into individual characters).
+- Dual-mode nodes (`as_list` toggle):
+  - Must define `is_input_list=True` and `is_output_list=True`.
+  - When `as_list=True` (aggregation mode): combine inputs and return `io.NodeOutput([combined_result])`.
+  - When `as_list=False` (per-item mode): slice inputs with repeat-last semantics, execute each independently, and return `io.NodeOutput([res_0, res_1, ...])`.
 
 ## Change discipline
 
